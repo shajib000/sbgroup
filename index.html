@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BanglaMart — Professional Online Shopping</title>
+<style>
+:root{--primary:#f57224;--dark:#111827;--muted:#64748b;--bg:#f5f6f8;--card:#fff;--green:#16a34a;--danger:#dc2626;--line:#e5e7eb}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Noto Sans Bengali",sans-serif;background:var(--bg);color:#172033}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}
+header{background:#fff;position:sticky;top:0;z-index:20;box-shadow:0 2px 10px #0001}
+.nav{max-width:1200px;margin:auto;padding:14px 20px;display:flex;align-items:center;gap:16px}
+.logo{font-size:26px;font-weight:800;color:var(--primary);white-space:nowrap}.logo span{color:#111827}
+.search{flex:1;display:flex}.search input{width:100%;padding:13px;border:1px solid #ddd;border-radius:7px 0 0 7px}.search button{background:var(--primary);color:white;padding:0 20px;border-radius:0 7px 7px 0}
+.navbtn{background:#eef2f7;padding:10px 13px;border-radius:7px}.cartCount{background:var(--danger);color:#fff;border-radius:99px;padding:2px 6px;font-size:11px}
+.wrap{max-width:1200px;margin:24px auto;padding:0 20px}
+.hero{background:linear-gradient(135deg,#fff,#fff4eb);border-radius:14px;padding:35px;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.hero h1{font-size:38px;margin:0 0 10px}.hero p{color:var(--muted);font-size:17px}
+.hero button,.primary{background:var(--primary);color:#fff;padding:12px 18px;border-radius:7px}
+.chips{display:flex;gap:10px;overflow:auto;margin:15px 0 25px}.chip{background:#fff;border:1px solid #ddd;padding:9px 15px;border-radius:30px;white-space:nowrap}.chip.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.card{background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px #0000000b}
+.pic{height:210px;background:#f1f5f9;position:relative}.pic img{width:100%;height:100%;object-fit:cover}.heart{position:absolute;right:10px;top:10px;background:#fff;border-radius:50%;width:38px;height:38px}
+.body{padding:13px}.name{height:42px;font-weight:600;overflow:hidden}.price{font-size:20px;font-weight:800;margin:9px 0;color:var(--primary)}.old{text-decoration:line-through;color:#999;font-size:13px;margin-left:6px}
+.add{width:100%;background:#fff0e8;color:var(--primary);padding:10px;border-radius:7px;font-weight:700;margin-top:7px}
+.detailsBtn{width:100%;background:#eef2f7;color:#172033;padding:10px;border-radius:7px;font-weight:700}.rating{color:#f59e0b;font-size:13px}.empty{text-align:center;padding:60px;color:var(--muted)}
+.overlay{position:fixed;inset:0;background:#0008;z-index:50;display:none}.panel{background:#fff;width:min(700px,94vw);max-height:92vh;overflow:auto;margin:4vh auto;border-radius:14px;padding:22px}.wide{width:min(1000px,95vw)}.close{float:right;background:#eee;border-radius:50%;width:34px;height:34px}
+.row{display:flex;gap:12px;align-items:center}.between{justify-content:space-between}.field{margin:10px 0}.field label{display:block;font-weight:700;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;padding:11px;border:1px solid #d8dee8;border-radius:7px}
+.cartrow{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #eee}.cartrow img{width:75px;height:75px;object-fit:cover;border-radius:7px}.qty button{width:28px;height:28px;background:#eee}.danger{color:var(--danger)}.success{color:var(--green)}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:15px 0}.tab{padding:9px 13px;background:#eef2f7;border-radius:7px}.tab.active{background:var(--dark);color:#fff}
+.adminTable{width:100%;border-collapse:collapse}.adminTable th,.adminTable td{padding:9px;border-bottom:1px solid #eee;text-align:left;font-size:14px;vertical-align:middle}
+.uploadBox{border:2px dashed #cbd5e1;padding:16px;border-radius:10px;background:#f8fafc;margin:10px 0}
+.previewGrid{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}.preview{position:relative;width:95px;height:95px}.preview img{width:100%;height:100%;object-fit:cover;border-radius:8px;border:1px solid #ddd}.preview button{position:absolute;right:-5px;top:-5px;width:23px;height:23px;border-radius:50%;background:#fff;color:#dc2626;box-shadow:0 1px 4px #0003}
+.mainPreview{width:160px;height:160px;margin-top:10px}.mainPreview img{width:100%;height:100%;object-fit:cover;border-radius:10px;border:1px solid #ddd}
+.detailGallery{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}.detailThumb{width:75px;height:75px;object-fit:cover;border:2px solid transparent;border-radius:8px;cursor:pointer}.detailThumb.active{border-color:var(--primary)}
+.detailMain{width:100%;height:380px;object-fit:contain;background:#f8fafc;border-radius:10px}
+.detailInfo h2{margin:10px 0}.badge{display:inline-block;background:#dcfce7;color:#166534;padding:5px 9px;border-radius:20px;font-size:12px;font-weight:700}
+footer{margin-top:50px;background:#111827;color:#dbe3ef;padding:35px 5%}.footergrid{max-width:1200px;margin:auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:30px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(3,1fr)}.hero h1{font-size:30px}.nav{flex-wrap:wrap}.search{order:5;flex-basis:100%}}
+@media(max-width:620px){.grid{grid-template-columns:repeat(2,1fr);gap:10px}.wrap{padding:0 10px}.hero{padding:22px}.hero h1{font-size:25px}.pic{height:170px}.footergrid{grid-template-columns:1fr}.nav{padding:10px}.detailMain{height:270px}}
+</style>
+</head>
+<body>
+<header><div class="nav">
+<div class="logo">Bangla<span>Mart</span></div>
+<div class="search"><input id="search" placeholder="পণ্য খুঁজুন..."><button onclick="render()">Search</button></div>
+<button class="navbtn" onclick="openModal('wishlistModal')">♡ <span id="wishCount">0</span></button>
+<button class="navbtn" onclick="openCart()">🛒 <span id="cartCount" class="cartCount">0</span></button>
+<button class="navbtn" onclick="openModal('accountModal')">👤</button>
+</div></header>
+
+<main class="wrap">
+<section class="hero"><div><h1>আপনার পছন্দ, আপনার দামে</h1><p>Fashion, Electronics, Home & আরও অনেক পণ্য এক জায়গায়।</p><button onclick="document.getElementById('products').scrollIntoView()">Shopping শুরু করুন</button></div><div style="font-size:90px">🛍️</div></section>
+<h2>Categories</h2><div id="chips" class="chips"></div>
+<div class="row between"><h2>Popular Products</h2><select id="sort" onchange="render()"><option value="">Sort</option><option value="low">Price Low → High</option><option value="high">Price High → Low</option><option value="rating">Top Rated</option></select></div>
+<div id="products" class="grid"></div>
+</main>
+
+<footer><div class="footergrid"><div><h2>BanglaMart</h2><p>Professional single-vendor shopping website demo।</p></div><div><h3>Customer</h3><p>Order Tracking</p><p>Return Policy</p><p>Contact</p></div><div><h3>Payment</h3><p>Cash on Delivery</p><p>Online Payment (demo)</p></div></div></footer>
+
+<div id="modal" class="overlay"><div class="panel" id="modalPanel"><button class="close" onclick="closeModal()">×</button><div id="modalBody"></div></div></div>
+
+<script>
+const KEY='banglamart_v2';
+
+const seed=[
+{id:1,name:'Premium Cotton T-Shirt',cat:'Fashion',price:650,old:850,rating:4.7,stock:30,img:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=700',images:[],desc:'Premium quality cotton T-shirt. Comfortable for daily use.'},
+{id:2,name:'Wireless Bluetooth Headphone',cat:'Electronics',price:1450,old:1800,rating:4.5,stock:15,img:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=700',images:[],desc:'Clear sound, comfortable design and wireless connectivity.'},
+{id:3,name:'Smart Watch Series X',cat:'Electronics',price:2200,old:2800,rating:4.4,stock:12,img:'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=700',images:[],desc:'Modern smart watch for everyday lifestyle.'},
+{id:4,name:'Minimal Backpack',cat:'Fashion',price:990,old:1250,rating:4.6,stock:22,img:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=700',images:[],desc:'Stylish and practical backpack.'},
+{id:5,name:'Home Table Lamp',cat:'Home',price:780,old:950,rating:4.3,stock:18,img:'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=700',images:[],desc:'Beautiful table lamp for home or office.'},
+{id:6,name:'Running Shoes',cat:'Fashion',price:1850,old:2300,rating:4.8,stock:20,img:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=700',images:[],desc:'Comfortable running shoes.'},
+{id:7,name:'Kitchen Organizer',cat:'Home',price:550,old:700,rating:4.2,stock:25,img:'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=700',images:[],desc:'Useful organizer for kitchen items.'},
+{id:8,name:'USB-C Fast Charger',cat:'Electronics',price:720,old:900,rating:4.5,stock:40,img:'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=700',images:[],desc:'Fast charging USB-C adapter.'}
+];
+
+let state=JSON.parse(localStorage.getItem(KEY)||'null')||{products:seed,cart:[],wish:[],orders:[],reviews:[],admin:false};
+state.products.forEach(p=>{if(!Array.isArray(p.images))p.images=[]});
+let activeCat='All';
+let tempMainImage='';
+let tempGalleryImages=[];
+
+function save(){localStorage.setItem(KEY,JSON.stringify(state));updateCounts()}
+function money(n){return '৳'+Number(n).toLocaleString('en-BD')}
+function updateCounts(){document.getElementById('cartCount').textContent=state.cart.reduce((a,x)=>a+x.qty,0);document.getElementById('wishCount').textContent=state.wish.length}
+function cats(){return ['All',...new Set(state.products.map(p=>p.cat))]}
+
+function render(){
+ let q=document.getElementById('search').value.toLowerCase(),sort=document.getElementById('sort').value;
+ let list=state.products.filter(p=>(activeCat==='All'||p.cat===activeCat)&&p.name.toLowerCase().includes(q));
+ if(sort==='low')list.sort((a,b)=>a.price-b.price);
+ if(sort==='high')list.sort((a,b)=>b.price-a.price);
+ if(sort==='rating')list.sort((a,b)=>b.rating-a.rating);
+ document.getElementById('chips').innerHTML=cats().map(c=>`<button class="chip ${c===activeCat?'active':''}" onclick="activeCat='${esc(c)}';render()">${esc(c)}</button>`).join('');
+ document.getElementById('products').innerHTML=list.length?list.map(card).join(''):'<div class="empty" style="grid-column:1/-1">কোনো পণ্য পাওয়া যায়নি।</div>';
+ updateCounts();
+}
+
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;')}
+
+function card(p){
+ let w=state.wish.includes(p.id), imgs=[p.img,...(p.images||[])].filter(Boolean);
+ return `<article class="card">
+ <div class="pic"><img src="${imgs[0]}" alt="${esc(p.name)}"><button class="heart" onclick="toggleWish(${p.id})">${w?'❤️':'♡'}</button></div>
+ <div class="body"><div class="name">${esc(p.name)}</div><div class="rating">★ ${p.rating}</div>
+ <div class="price">${money(p.price)} ${p.old?`<span class="old">${money(p.old)}</span>`:''}</div>
+ <div style="font-size:12px;color:#64748b;margin-bottom:8px">Stock: ${p.stock}</div>
+ <button class="detailsBtn" onclick="showProduct(${p.id})">👁️ পণ্যের বিস্তারিত</button>
+ <button class="add" onclick="addCart(${p.id})">🛒 Add to Cart</button></div></article>`;
+}
+
+function toggleWish(id){state.wish=state.wish.includes(id)?state.wish.filter(x=>x!==id):[...state.wish,id];save();render()}
+function addCart(id){let p=state.products.find(x=>x.id===id),c=state.cart.find(x=>x.id===id);if(!p||p.stock<1)return alert('এই পণ্যটি স্টকে নেই');if(c)c.qty=Math.min(c.qty+1,p.stock);else state.cart.push({id,qty:1});save();alert('Cart-এ যোগ হয়েছে')}
+
+function showProduct(id){
+ let p=state.products.find(x=>x.id===id);if(!p)return;
+ let imgs=[p.img,...(p.images||[])].filter(Boolean);
+ document.getElementById('modalPanel').classList.add('wide');
+ document.getElementById('modalBody').innerHTML=`<div class="detailInfo">
+ <h2>${esc(p.name)}</h2><span class="badge">${p.stock>0?'স্টকে আছে':'স্টকে নেই'}</span>
+ <img id="detailMain" class="detailMain" src="${imgs[0]}" alt="">
+ <div class="detailGallery">${imgs.map((im,i)=>`<img class="detailThumb ${i===0?'active':''}" src="${im}" onclick="changeDetailImage(this,'${im.replace(/'/g,"&#039;")}')">`).join('')}</div>
+ <div class="rating" style="margin-top:12px">★ ${p.rating} / 5</div>
+ <div class="price">${money(p.price)} ${p.old?`<span class="old">${money(p.old)}</span>`:''}</div>
+ <p><b>Category:</b> ${esc(p.cat)}</p><p><b>বিস্তারিত:</b> ${esc(p.desc||'এই পণ্যের বিস্তারিত তথ্য শীঘ্রই যোগ করা হবে।')}</p>
+ <div class="row"><button class="add" style="flex:1" onclick="addCart(${p.id})">🛒 Add to Cart</button><button class="primary" style="flex:1" onclick="buyNow(${p.id})">⚡ এখনই অর্ডার করুন</button></div>
+ </div>`;
+ document.getElementById('modal').style.display='block';
+}
+function changeDetailImage(el,src){document.getElementById('detailMain').src=src;document.querySelectorAll('.detailThumb').forEach(x=>x.classList.remove('active'));el.classList.add('active')}
+function buyNow(id){state.cart=[];addCart(id);checkout()}
+
+function openCart(){openModal('cartModal');renderCart()}
+function renderCart(){
+ let total=state.cart.reduce((s,c)=>{let p=state.products.find(x=>x.id===c.id);return s+(p?p.price*c.qty:0)},0);
+ let rows=state.cart.map(c=>{let p=state.products.find(x=>x.id===c.id);return p?`<div class="cartrow"><img src="${p.img}"><div style="flex:1"><b>${esc(p.name)}</b><div>${money(p.price)} × ${c.qty}</div><div class="qty"><button onclick="changeQty(${p.id},-1)">−</button> ${c.qty} <button onclick="changeQty(${p.id},1)">+</button> <button onclick="removeCart(${p.id})" class="danger">Remove</button></div></div><b>${money(p.price*c.qty)}</b></div>`:''}).join('');
+ document.getElementById('modalBody').innerHTML=`<h2>🛒 Your Cart</h2>${rows||'<div class="empty">Cart খালি</div>'}<hr><div class="row between"><h3>Total</h3><h2>${money(total)}</h2></div>${state.cart.length?'<button class="primary" style="width:100%" onclick="checkout()">Checkout</button>':''}`;
+}
+function changeQty(id,d){let c=state.cart.find(x=>x.id===id),p=state.products.find(x=>x.id===id);if(!c)return;c.qty+=d;if(c.qty<=0)state.cart=state.cart.filter(x=>x.id!==id);if(c&&p&&c.qty>p.stock)c.qty=p.stock;save();renderCart()}
+function removeCart(id){state.cart=state.cart.filter(x=>x.id!==id);save();renderCart()}
+
+function checkout(){
+ if(!state.cart.length)return;
+ let total=state.cart.reduce((s,c)=>s+state.products.find(p=>p.id===c.id).price*c.qty,0);
+ document.getElementById('modalBody').innerHTML=`<h2>Checkout</h2><div class="field"><label>নাম</label><input id="coName" placeholder="আপনার নাম"></div><div class="field"><label>মোবাইল</label><input id="coPhone" placeholder="01XXXXXXXXX"></div><div class="field"><label>ঠিকানা</label><textarea id="coAddr" rows="3" placeholder="সম্পূর্ণ ডেলিভারি ঠিকানা"></textarea></div><div class="field"><label>Payment</label><select id="coPay"><option>Cash on Delivery</option><option>Online Payment (Demo)</option></select></div><div class="field"><label>Coupon</label><input id="coupon" placeholder="SAVE10"></div><h3>Subtotal: ${money(total)}</h3><button class="primary" style="width:100%" onclick="placeOrder(${total})">Place Order</button>`;
+}
+function placeOrder(total){
+ let name=document.getElementById('coName').value.trim(),phone=document.getElementById('coPhone').value.trim(),addr=document.getElementById('coAddr').value.trim();
+ if(!name||!phone||!addr)return alert('নাম, মোবাইল ও ঠিকানা দিন');
+ if(!/^01\\d{9}$/.test(phone))return alert('সঠিক বাংলাদেশি মোবাইল নম্বর দিন');
+ let coupon=document.getElementById('coupon').value.trim().toUpperCase(),discount=coupon==='SAVE10'?Math.round(total*.1):0;
+ state.cart.forEach(c=>{let p=state.products.find(x=>x.id===c.id);if(p)p.stock=Math.max(0,p.stock-c.qty)});
+ let id='BM'+Date.now().toString().slice(-8);
+ state.orders.unshift({id,date:new Date().toLocaleString('en-BD'),name,phone,addr,payment:document.getElementById('coPay').value,items:JSON.parse(JSON.stringify(state.cart)),total:total-discount,status:'Pending'});
+ state.cart=[];save();closeModal();alert(`Order সফল! Order ID: ${id}`);render();
+}
+
+function openModal(type){
+ document.getElementById('modal').style.display='block';document.getElementById('modalPanel').classList.remove('wide');
+ let body=document.getElementById('modalBody');
+ if(type==='wishlistModal'){let ps=state.products.filter(p=>state.wish.includes(p.id));body.innerHTML='<h2>♡ Wishlist</h2>'+(ps.length?`<div class="grid">${ps.map(card).join('')}</div>`:'<div class="empty">Wishlist খালি</div>')}
+ else if(type==='accountModal')account();
+ else if(type==='cartModal')renderCart();
+ else if(type==='adminModal')adminLogin();
+ else if(type==='trackModal')trackForm();
+}
+function closeModal(){document.getElementById('modal').style.display='none';document.getElementById('modalPanel').classList.remove('wide')}
+function account(){document.getElementById('modalBody').innerHTML=`<h2>👤 My Account</h2><p>Guest customer mode চলছে।</p><button class="primary" onclick="trackForm()">📦 Track Order</button><button class="navbtn" style="margin-left:8px" onclick="adminLogin()">⚙️ Admin</button>`}
+function trackForm(){document.getElementById('modalBody').innerHTML=`<h2>📦 Track Order</h2><div class="field"><label>Order ID</label><input id="trackId" placeholder="যেমন BM12345678"></div><button class="primary" onclick="trackOrder()">Track</button><div id="trackResult"></div>`}
+function trackOrder(){let id=document.getElementById('trackId').value.trim(),o=state.orders.find(x=>x.id===id),r=document.getElementById('trackResult');r.innerHTML=o?`<hr><h3>${o.id}</h3><p><b>Status:</b> <span class="success">${o.status}</span></p><p><b>Total:</b> ${money(o.total)}</p><p><b>Payment:</b> ${o.payment}</p><p>${esc(o.addr)}</p>`:'<p class="danger">Order পাওয়া যায়নি।</p>'}
+
+function adminLogin(){document.getElementById('modalBody').innerHTML=`<h2>⚙️ Admin Panel</h2><p style="color:#64748b">Demo login: admin / 1234</p><div class="field"><input id="admU" placeholder="Username"></div><div class="field"><input id="admP" type="password" placeholder="Password"></div><button class="primary" onclick="loginAdmin()">Login</button>`}
+function loginAdmin(){if(document.getElementById('admU').value==='admin'&&document.getElementById('admP').value==='1234'){state.admin=true;save();adminPanel()}else alert('Wrong login')}
+function adminPanel(){let tab=window.adminTab||'dash';let b=document.getElementById('modalBody');b.innerHTML=`<h2>⚙️ Admin Dashboard</h2><div class="tabs"><button class="tab ${tab==='dash'?'active':''}" onclick="adminTab='dash';adminPanel()">Dashboard</button><button class="tab ${tab==='prod'?'active':''}" onclick="adminTab='prod';adminPanel()">Products</button><button class="tab ${tab==='orders'?'active':''}" onclick="adminTab='orders';adminPanel()">Orders</button><button class="tab" onclick="state.admin=false;closeModal()">Logout</button></div>${tab==='dash'?adminDash():tab==='prod'?adminProducts():adminOrders()}`}
+function adminDash(){let revenue=state.orders.reduce((s,o)=>s+o.total,0);return `<div class="grid"><div class="card body"><h3>Products</h3><h2>${state.products.length}</h2></div><div class="card body"><h3>Orders</h3><h2>${state.orders.length}</h2></div><div class="card body"><h3>Revenue</h3><h2>${money(revenue)}</h2></div><div class="card body"><h3>Stock Units</h3><h2>${state.products.reduce((s,p)=>s+p.stock,0)}</h2></div></div><hr><button class="primary" onclick="adminTab='prod';adminPanel()">+ Add Product</button>`}
+function adminProducts(){return `<button class="primary" onclick="productForm()">+ Add Product</button><div style="overflow:auto"><table class="adminTable"><tr><th>Product</th><th>Images</th><th>Price</th><th>Stock</th><th>Action</th></tr>${state.products.map(p=>`<tr><td>${esc(p.name)}</td><td>1 main + ${(p.images||[]).length} extra</td><td>${money(p.price)}</td><td>${p.stock}</td><td><button onclick="productForm(${p.id})">Edit</button> <button onclick="deleteProduct(${p.id})" class="danger">Delete</button></td></tr>`).join('')}</table></div>`}
+
+function productForm(id){
+ let p=id?state.products.find(x=>x.id===id):{name:'',cat:'Fashion',price:0,old:0,rating:5,stock:10,img:'',images:[],desc:''};
+ tempMainImage=p.img||'';tempGalleryImages=[...(p.images||[])];
+ document.getElementById('modalPanel').classList.add('wide');
+ document.getElementById('modalBody').innerHTML=`<h2>${id?'✏️ Edit':'➕ Add'} Product</h2>
+ <div class="field"><label>Product Name</label><input id="pn" value="${esc(p.name)}"></div>
+ <div class="field"><label>Category</label><input id="pc" value="${esc(p.cat)}"></div>
+ <div class="field"><label>Price</label><input id="pp" type="number" value="${p.price}"></div>
+ <div class="field"><label>Old Price</label><input id="po" type="number" value="${p.old||0}"></div>
+ <div class="field"><label>Stock</label><input id="ps" type="number" value="${p.stock}"></div>
+ <div class="field"><label>Product Description</label><textarea id="pd" rows="4" placeholder="পণ্যের বিস্তারিত লিখুন...">${esc(p.desc||'')}</textarea></div>
+ <div class="uploadBox"><b>📷 প্রধান পণ্যের ছবি (Main Image)</b><p style="font-size:13px;color:#64748b">এখানে ১টি প্রধান ছবি আপলোড করুন।</p><input id="mainFile" type="file" accept="image/*" onchange="handleMainImage(this)"><div id="mainPreview"></div></div>
+ <div class="field"><label>অথবা Main Image URL</label><input id="pi" value="${esc(p.img||'')}" oninput="tempMainImage=this.value;renderUploadPreview()"></div>
+ <div class="uploadBox"><b>🖼️ অতিরিক্ত পণ্যের ছবি (Gallery Images)</b><p style="font-size:13px;color:#64748b">একসাথে একাধিক ছবি নির্বাচন করতে পারবেন।</p><input id="galleryFiles" type="file" accept="image/*" multiple onchange="handleGalleryImages(this)"><div id="galleryPreview"></div></div>
+ <button class="primary" onclick="saveProduct(${id||0})">💾 Save Product</button>`;
+ renderUploadPreview();
+}
+function handleMainImage(input){let f=input.files&&input.files[0];if(!f)return;readImage(f,data=>{tempMainImage=data;document.getElementById('pi').value='';renderUploadPreview()})}
+function handleGalleryImages(input){let files=[...(input.files||[])];if(!files.length)return;let left=files.length;files.forEach(f=>readImage(f,data=>{tempGalleryImages.push(data);if(--left===0)renderUploadPreview()}));input.value=''}
+function readImage(file,cb){if(!file.type.startsWith('image/'))return alert('শুধু image file নির্বাচন করুন');if(file.size>4*1024*1024)return alert('একটি ছবি 4MB-এর মধ্যে রাখুন');let r=new FileReader();r.onload=e=>cb(e.target.result);r.readAsDataURL(file)}
+function removeGallery(i){tempGalleryImages.splice(i,1);renderUploadPreview()}
+function renderUploadPreview(){
+ let m=document.getElementById('mainPreview'),g=document.getElementById('galleryPreview');
+ if(m)m.innerHTML=tempMainImage?`<div class="mainPreview"><img src="${tempMainImage}"></div>`:'<p style="color:#64748b">Main image নির্বাচিত হয়নি।</p>';
+ if(g)g.innerHTML=tempGalleryImages.length?`<div class="previewGrid">${tempGalleryImages.map((im,i)=>`<div class="preview"><img src="${im}"><button onclick="removeGallery(${i})">×</button></div>`).join('')}</div>`:'<p style="color:#64748b">Extra images নেই।</p>';
+}
+function saveProduct(id){
+ let obj={id:id||Date.now(),name:document.getElementById('pn').value.trim(),cat:document.getElementById('pc').value.trim()||'Other',price:+document.getElementById('pp').value,old:+document.getElementById('po').value,rating:id?(state.products.find(p=>p.id===id)?.rating||5):5,stock:+document.getElementById('ps').value,img:tempMainImage||document.getElementById('pi').value.trim(),images:[...tempGalleryImages],desc:document.getElementById('pd').value.trim()};
+ if(!obj.name)return alert('Product name দিন');
+ if(!obj.img)return alert('একটি Main Product Image দিন');
+ if(id){let i=state.products.findIndex(p=>p.id===id);state.products[i]=obj}else state.products.push(obj);
+ save();adminTab='prod';adminPanel();render();
+}
+function deleteProduct(id){if(confirm('Delete করবেন?')){state.products=state.products.filter(p=>p.id!==id);save();adminPanel();render()}}
+function adminOrders(){return `<table class="adminTable"><tr><th>ID</th><th>Customer</th><th>Total</th><th>Status</th><th>Change</th></tr>${state.orders.map(o=>`<tr><td>${o.id}</td><td>${esc(o.name)}<br>${esc(o.phone)}</td><td>${money(o.total)}</td><td>${o.status}</td><td><select onchange="setStatus('${o.id}',this.value)"><option ${o.status==='Pending'?'selected':''}>Pending</option><option ${o.status==='Confirmed'?'selected':''}>Confirmed</option><option ${o.status==='Packed'?'selected':''}>Packed</option><option ${o.status==='Shipped'?'selected':''}>Shipped</option><option ${o.status==='Delivered'?'selected':''}>Delivered</option><option ${o.status==='Cancelled'?'selected':''}>Cancelled</option></select></td></tr>`).join('')}</table>`}
+function setStatus(id,s){let o=state.orders.find(x=>x.id===id);if(o)o.status=s;save();adminPanel()}
+
+document.getElementById('search').addEventListener('input',render);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal()});
+render();
+</script>
+</body>
+</html>
