@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SB Group - প্রিমিয়াম ই-কমার্স</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="container top-bar-inner">
+            <div class="top-links">
+                <a href="#"><i class="fas fa-phone-alt"></i> হটলাইন: ০১৭xxxxxxxx</a>
+                <a href="#" onclick="openModal('trackingModal')"><i class="fas fa-truck"></i> অর্ডার ট্র্যাক</a>
+            </div>
+            <div class="top-links">
+                <a href="#" onclick="openAdminLogin()"><i class="fas fa-user-shield"></i> অ্যাডমিন প্যানেল</a>
+                <a href="#"><i class="fas fa-question-circle"></i> হেল্প</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container header-inner">
+            <div class="logo" onclick="window.scrollTo(0,0)">
+                <i class="fas fa-shopping-bag"></i> SB<span>Group</span>
+            </div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="আপনার পছন্দের প্রোডাক্ট খুঁজুন...">
+                <button onclick="applyFilters()"><i class="fas fa-search"></i> সার্চ</button>
+            </div>
+            <div class="header-icons">
+                <div class="icon-item" onclick="openModal('wishlistModal')">
+                    <i class="far fa-heart"></i>
+                    <span class="badge" id="wishlistCount">0</span>
+                    <p>উইশলিস্ট</p>
+                </div>
+                <div class="icon-item" onclick="openModal('cartModal')">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="badge" id="cartCount">0</span>
+                    <p>কার্ট</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="container nav-inner">
+            <div class="category-dropdown">
+                <button class="cat-btn"><i class="fas fa-bars"></i> সব ক্যাটাগরি</button>
+                <ul class="cat-list">
+                    <li onclick="filterCategory('Electronics')"><i class="fas fa-mobile-alt"></i> ইলেকট্রনিক্স</li>
+                    <li onclick="filterCategory('Fashion')"><i class="fas fa-tshirt"></i> ফ্যাশন</li>
+                    <li onclick="filterCategory('Home')"><i class="fas fa-couch"></i> হোম ও লিভিং</li>
+                    <li onclick="filterCategory('Beauty')"><i class="fas fa-spa"></i> বিউটি ও হেলথ</li>
+                </ul>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#" onclick="filterCategory('all')">হোম</a></li>
+                <li><a href="#" style="color: #ffd700;"><i class="fas fa-bolt"></i> ফ্ল্যাশ সেল</a></li>
+                <li><a href="#">নতুন কলেকশন</a></li>
+                <li><a href="#">ব্লগ</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Layout -->
+    <div class="container main-layout">
+        <aside class="sidebar">
+            <div class="filter-box">
+                <h3><i class="fas fa-filter"></i> ফিল্টার</h3>
+                <div class="filter-group">
+                    <h4>ক্যাটাগরি</h4>
+                    <label><input type="radio" name="cat" value="all" checked onchange="applyFilters()"> সব</label>
+                    <label><input type="radio" name="cat" value="Electronics" onchange="applyFilters()"> ইলেকট্রনিক্স</label>
+                    <label><input type="radio" name="cat" value="Fashion" onchange="applyFilters()"> ফ্যাশন</label>
+                    <label><input type="radio" name="cat" value="Home" onchange="applyFilters()"> হোম</label>
+                </div>
+                <div class="filter-group">
+                    <h4>প্রাইস রেঞ্জ (টাকা)</h4>
+                    <input type="range" id="priceRange" min="0" max="10000" value="10000" oninput="document.getElementById('priceVal').innerText = '৳'+this.value; applyFilters()">
+                    <p>সর্বোচ্চ: <span id="priceVal">৳10000</span></p>
+                </div>
+                <div class="filter-group">
+                    <h4>সর্টিং</h4>
+                    <select id="sortFilter" onchange="applyFilters()">
+                        <option value="default">ডিফল্ট</option>
+                        <option value="rating">রেটিং (হাই টু লো)</option>
+                        <option value="priceLow">প্রাইস (লো টু হাই)</option>
+                        <option value="priceHigh">প্রাইস (হাই টু লো)</option>
+                    </select>
+                </div>
+            </div>
+        </aside>
+
+        <main class="content-area">
+            <div class="section-header">
+                <h2>আমাদের প্রোডাক্টস</h2>
+                <span id="productCount">0 টি প্রোডাক্ট পাওয়া গেছে</span>
+            </div>
+            <div id="productGrid" class="product-grid"></div>
+            <div class="load-more-container">
+                <button id="loadMoreBtn" class="btn-outline" onclick="loadMore()">আরও দেখুন</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Features Banner -->
+    <div class="container features-banner">
+        <div class="feature-item"><i class="fas fa-truck-fast"></i> <div><h4>ফাস্ট ডেলিভারি</h4><p>২৪-৪৮ ঘন্টার মধ্যে</p></div></div>
+        <div class="feature-item"><i class="fas fa-undo"></i> <div><h4>৭ দিনের রিটার্ন</h4><p>সহজ রিটার্ন পলিসি</p></div></div>
+        <div class="feature-item"><i class="fas fa-shield-alt"></i> <div><h4>১০০% নিরাপদ</h4><p>ক্যাশ অন ডেলিভারি</p></div></div>
+        <div class="feature-item"><i class="fas fa-headset"></i> <div><h4>২৪/৭ সাপোর্ট</h4><p>যেকোনো সমস্যায় পাশে আছি</p></div></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container footer-grid">
+            <div class="footer-col">
+                <h3>SB Group</h3>
+                <p>আমরা সেরা মানের প্রোডাক্ট সাশ্রয়ী মূল্যে সরবরাহ করি। আপনার বিশ্বস্ত অনলাইন শপিং পার্টনার।</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>কাস্টমার সার্ভিস</h3>
+                <ul>
+                    <li><a href="#">যোগাযোগ</a></li>
+                    <li><a href="#">রিটার্ন পলিসি</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>আমাদের সম্পর্কে</h3>
+                <ul>
+                    <li><a href="#">কোম্পানি ইনফো</a></li>
+                    <li><a href="#">ক্যারিয়ার</a></li>
+                    <li><a href="#">ব্লগ</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>নিউজলেটার</h3>
+                <div class="newsletter">
+                    <input type="email" placeholder="ইমেইল দিন">
+                    <button><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 SB Group. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- ================= FLOATING BUTTONS ================= -->
+    <a href="https://wa.me/8801700000000" target="_blank" class="whatsapp-float" title="WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    <button class="chat-float" onclick="toggleChat()" title="লাইভ সাপোর্ট">
+        <i class="fas fa-comments"></i>
+    </button>
+
+    <!-- Live Chat Box -->
+    <div id="chatBox" class="chat-box">
+        <div class="chat-header">
+            <span><i class="fas fa-headset"></i> লাইভ সাপোর্ট</span>
+            <span onclick="toggleChat()" style="cursor:pointer; font-size:20px;">&times;</span>
+        </div>
+        <div class="chat-body" id="chatBody"></div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput" placeholder="মেসেজ লিখুন..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+            <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <!-- ================= MODALS ================= -->
+    <!-- Admin Login -->
+    <div id="adminLoginModal" class="modal">
+        <div class="modal-content text-center" style="max-width: 400px;">
+            <span class="close" onclick="closeModal('adminLoginModal')">&times;</span>
+            <i class="fas fa-lock" style="font-size: 40px; color: var(--primary); margin-bottom: 15px;"></i>
+            <h2>অ্যাডমিন লগইন</h2>
+            <p style="color: #888; margin-bottom: 15px;">শুধুমাত্র অনুমোদিত ব্যক্তির জন্য</p>
+            <input type="password" id="adminPassword" placeholder="পাসওয়ার্ড দিন" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid var(--border); border-radius:6px; outline:none; text-align:center;">
+            <button class="btn-primary btn-block" onclick="verifyAdminPassword()">লগইন করুন</button>
+        </div>
+    </div>
+
+    <!-- Product Details -->
+    <div id="productModal" class="modal">
+        <div class="modal-content large-modal">
+            <span class="close" onclick="closeModal('productModal')">&times;</span>
+            <div id="productDetails" class="product-details-layout"></div>
+        </div>
+    </div>
+
+    <!-- Cart -->
+    <div id="cartModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('cartModal')">&times;</span>
+            <h2><i class="fas fa-shopping-cart"></i> আপনার কার্ট</h2>
+            <div id="cartItems" class="modal-list"></div>
+            <div class="modal-summary">
+                <h3>সাবটোটাল: ৳<span id="cartTotal">0</span></h3>
+                <button class="btn-primary" onclick="openCheckout()">চেকআউট করুন <i class="fas fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Wishlist -->
+    <div id="wishlistModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('wishlistModal')">&times;</span>
+            <h2><i class="fas fa-heart" style="color:red;"></i> আপনার উইশলিস্ট</h2>
+            <div id="wishlistItems" class="modal-list"></div>
+        </div>
+    </div>
+
+    <!-- Checkout -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content large-modal">
+            <span class="close" onclick="closeModal('checkoutModal')">&times;</span>
+            <h2>চেকআউট</h2>
+            <div class="checkout-layout">
+                <form id="checkoutForm" onsubmit="placeOrder(event)">
+                    <h3>১. কাস্টমার ইনফরমেশন</h3>
+                    <input type="text" id="custName" placeholder="আপনার পূর্ণ নাম" required>
+                    <input type="tel" id="custPhone" placeholder="মোবাইল নম্বর (১১ ডিজিট)" required pattern="01[3-9]\d{8}">
+                    <textarea id="custAddress" placeholder="সম্পূর্ণ ডেলিভারি ঠিকানা" required></textarea>
+                    
+                    <h3>২. পেমেন্ট মেথড</h3>
+                    <div class="payment-options">
+                        <label><input type="radio" name="payment" value="COD" checked> 💵 ক্যাশ অন ডেলিভারি</label>
+                        <label><input type="radio" name="payment" value="Online"> 💳 অনলাইন পেমেন্ট (ডেমো)</label>
+                    </div>
+
+                    <h3>৩. কুপন কোড</h3>
+                    <div class="coupon-box">
+                        <input type="text" id="couponCode" placeholder="কুপন কোড (SAVE10)">
+                        <button type="button" onclick="applyCoupon()">অ্যাপ্লাই</button>
+                    </div>
+                    <button type="submit" class="btn-primary btn-block">অর্ডার কনফার্ম করুন</button>
+                </form>
+                
+                <div class="order-summary-box">
+                    <h3>অর্ডার সামারি</h3>
+                    <div id="checkoutItemsList"></div>
+                    <hr>
+                    <p>সাবটোটাল: ৳<span id="checkoutSubtotal">0</span></p>
+                    <p>ডেলিভারি চার্জ: ৳<span id="deliveryCharge">50</span></p>
+                    <p>ডিসকাউন্ট: -৳<span id="discountAmount">0</span></p>
+                    <h3>সর্বমোট: ৳<span id="checkoutTotal">0</span></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success -->
+    <div id="successModal" class="modal">
+        <div class="modal-content text-center">
+            <span class="close" onclick="closeModal('successModal')">&times;</span>
+            <i class="fas fa-check-circle" style="font-size: 60px; color: #2ecc71; margin-bottom: 20px;"></i>
+            <h2>অর্ডার সফল হয়েছে!</h2>
+            <p>আপনার অর্ডার আইডি: <strong id="orderIdDisplay" style="font-size: 20px; color: var(--primary);"></strong></p>
+            <p>আমরা শীঘ্রই আপনার সাথে যোগাযোগ করবো।</p>
+            <button class="btn-primary" onclick="closeModal('successModal'); openModal('trackingModal')">অর্ডার ট্র্যাক করুন</button>
+        </div>
+    </div>
+
+    <!-- Tracking -->
+    <div id="trackingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('trackingModal')">&times;</span>
+            <h2><i class="fas fa-truck"></i> অর্ডার ট্র্যাকিং</h2>
+            <div class="tracking-search">
+                <input type="text" id="trackOrderId" placeholder="অর্ডার আইডি লিখুন">
+                <button class="btn-primary" onclick="trackOrder()">ট্র্যাক</button>
+            </div>
+            <div id="trackingResult" class="tracking-result"></div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content large-modal">
+            <span class="close" onclick="closeModal('adminModal')">&times;</span>
+            <h2><i class="fas fa-user-shield"></i> অ্যাডমিন প্যানেল</h2>
+            <div class="admin-tabs">
+                <button onclick="showAdminTab('dashboard')" class="active">📊 ড্যাশবোর্ড</button>
+                <button onclick="showAdminTab('products')">📦 প্রোডাক্ট</button>
+                <button onclick="showAdminTab('orders')">📋 অর্ডার</button>
+                <button onclick="showAdminTab('chat')">💬 লাইভ চ্যাট</button>
+            </div>
+            
+            <div id="adminDashboard" class="admin-tab-content"></div>
+            
+            <div id="adminProducts" class="admin-tab-content" style="display:none;">
+                <form id="productForm" onsubmit="saveProduct(event)" class="admin-form">
+                    <input type="hidden" id="editProductId">
+                    <input type="text" id="pTitle" placeholder="প্রোডাক্টের নাম" required>
+                    <input type="number" id="pPrice" placeholder="প্রাইস (টাকা)" required>
+                    <input type="number" id="pOldPrice" placeholder="আগের প্রাইস (টাকা)">
+                    <input type="text" id="pCategory" placeholder="ক্যাটাগরি" required>
+                    <input type="number" id="pStock" placeholder="স্টক পরিমাণ" required>
+                    
+                    <div style="grid-column: span 2; background: white; padding: 10px; border: 1px dashed #ccc; border-radius: 5px;">
+                        <label style="display:block; margin-bottom:5px; font-weight:bold;">প্রোডাক্ট ইমেজ (একাধিক সিলেক্ট করতে Ctrl চেপে ধরে সিলেক্ট করুন):</label>
+                        <input type="file" id="pImageFile" accept="image/*" multiple style="border:none; padding:0; margin-bottom:5px;">
+                        <p style="font-size:12px; color:#888; margin-bottom:5px;">অথবা ইমেজ URL দিন (একাধিক URL কমা দিয়ে আলাদা করুন):</p>
+                        <input type="text" id="pImage" placeholder="https://example.com/img1.jpg, https://example.com/img2.jpg">
+                    </div>
+                    
+                    <textarea id="pDesc" placeholder="বিবরণ"></textarea>
+                    <button type="submit" class="btn-primary">সেভ করুন</button>
+                </form>
+                <div id="adminProductList" class="admin-list"></div>
+            </div>
+            
+            <div id="adminOrders" class="admin-tab-content" style="display:none;"></div>
+            
+            <div id="adminChat" class="admin-tab-content" style="display:none;">
+                <div class="admin-chat-container">
+                    <div class="admin-chat-body" id="adminChatBody"></div>
+                    <div class="admin-chat-footer">
+                        <input type="text" id="adminChatInput" placeholder="কাস্টমারকে রিপ্লাই দিন..." onkeypress="if(event.key === 'Enter') sendAdminReply()">
+                        <button onclick="sendAdminReply()"><i class="fas fa-paper-plane"></i> পাঠান</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <script src="app.js"></script>
+</body>
+</html>
