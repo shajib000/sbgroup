@@ -10,6 +10,20 @@ window.formatBDT = function(amount) {
   return `৳${num.toLocaleString('en-IN')}`;
 };
 
+// Admin product image state (main + multiple gallery images)
+let adminProductImages = [];
+let editingProductId = null;
+
+// Client-side SHA-256 helper. Plain admin credentials are never stored in source.
+async function sbHash(value) {
+  const data = new TextEncoder().encode(value);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+const SB_ADMIN_EMAIL_HASH = 'b3a5e63d1e4892daf16ebc74a77cca45db350cefb4a3576214ef4ff0dca84bda';
+const SB_ADMIN_PASSWORD_HASH = '915ccd95569bc829c02d188aba4e327d5c8c5c51659ec4d2bf4d0c5a3a7b5c3d';
+
 // Initial Bangladeshi Catalog
 const INITIAL_PRODUCTS = [
   {
@@ -627,14 +641,12 @@ class AppState {
       category: productData.category,
       price: parseFloat(productData.price) || 990,
       originalPrice: parseFloat(productData.originalPrice) || (parseFloat(productData.price) * 1.3),
-      rating: 5.0,
-      reviewsCount: 1,
       image: productData.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80',
+      images: Array.isArray(productData.images) ? productData.images : [],
       description: productData.description || 'SB Group Premium Guaranteed Product.',
       badge: 'New Arrival',
       stock: parseInt(productData.stock) || 50,
       deliveryCharge: parseFloat(productData.deliveryCharge) || 0,
-      specs: { 'Origin': 'Authentic Import', 'Warranty': '1 Year SB Group Care' }
     };
     this.products.unshift(newProduct);
     this.saveStored('sb_products_v4', this.products);
@@ -767,8 +779,6 @@ window.renderRecommendedProducts = function() {
     products.sort((a, b) => a.price - b.price);
   } else if (window.sbApp.sortOption === 'price-high') {
     products.sort((a, b) => b.price - a.price);
-  } else if (window.sbApp.sortOption === 'rating') {
-    products.sort((a, b) => b.rating - a.rating);
   }
 
   if (products.length === 0) {
@@ -812,12 +822,6 @@ window.renderRecommendedProducts = function() {
           <div>
             <h4 onclick="window.openQuickView('${product.id}')" class="font-semibold text-slate-800 text-xs sm:text-sm hover:text-emerald-600 cursor-pointer line-clamp-1 transition-colors">${product.name}</h4>
             
-            <div class="flex items-center gap-1.5 mt-1">
-              <div class="flex text-amber-400 text-xs">
-                ${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5 - Math.floor(product.rating))}
-              </div>
-              <span class="text-[11px] text-slate-500 font-medium">(${product.rating})</span>
-            </div>
           </div>
 
           ${product.deliveryCharge > 0 ? `<div class="flex items-center gap-1 mt-1.5 text-[10px] text-slate-500"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0"/></svg><span>ডেলিভারি: ${window.formatBDT(product.deliveryCharge)}</span></div>` : ''}
@@ -1123,7 +1127,7 @@ window.openQuickView = function(productId) {
   const content = document.getElementById('quick-view-content');
   if (!modal || !content) return;
 
-  const specsList = Object.entries(product.specs || {}).map(([key, val]) => `
+  const specsList = Object.entries(product.specs || {}).filter(([key]) => key.toLowerCase() !== 'warranty').map(([key, val]) => `
     <div class="flex justify-between py-1.5 border-b border-slate-100 text-xs">
       <span class="text-slate-500">${key}:</span>
       <span class="font-medium text-slate-800">${val}</span>
@@ -1132,8 +1136,17 @@ window.openQuickView = function(productId) {
 
   content.innerHTML = `
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
-      <div class="bg-slate-50 rounded-2xl p-6 flex items-center justify-center border border-slate-100">
-        <img src="${product.image}" alt="${product.name}" class="max-h-72 object-contain mix-blend-multiply">
+      <div>
+        <div class="bg-slate-50 rounded-2xl p-6 flex items-center justify-center border border-slate-100">
+          <img id="quick-view-main-image" src="${product.image}" alt="${product.name}" class="max-h-72 w-full object-contain mix-blend-multiply">
+        </div>
+        ${Array.isArray(product.images) && product.images.length ? `
+          <div class="flex gap-2 mt-3 overflow-x-auto pb-1">
+            ${[product.image, ...product.images].slice(0, 9).map((src, i) => `
+              <button type="button" onclick="document.getElementById('quick-view-main-image').src='${src}'" class="w-14 h-14 flex-shrink-0 rounded-lg border ${i===0?'border-emerald-500':'border-slate-200'} overflow-hidden bg-white">
+                <img src="${src}" class="w-full h-full object-cover">
+              </button>`).join('')}
+          </div>` : ''}
       </div>
       <div class="flex flex-col justify-between">
         <div>
@@ -1144,14 +1157,6 @@ window.openQuickView = function(productId) {
           </div>
           <h3 class="text-xl font-bold text-slate-900">${product.name}</h3>
           
-          <div class="flex items-center gap-2 mt-2">
-            <div class="flex text-amber-400 text-sm">
-              ${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5 - Math.floor(product.rating))}
-            </div>
-            <span class="text-xs font-semibold text-slate-700">${product.rating}</span>
-            <span class="text-xs text-slate-400">(${product.reviewsCount} জন রিভিউ)</span>
-          </div>
-
           <div class="flex items-baseline gap-3 mt-4">
             <span class="text-2xl font-black text-slate-900">${window.formatBDT(product.price)}</span>
             ${product.originalPrice > product.price ? `<span class="text-sm text-slate-400 line-through">${window.formatBDT(product.originalPrice)}</span>` : ''}
@@ -1475,29 +1480,29 @@ window.closeAdminLoginModal = function() {
   }
 };
 
-window.handleAdminLogin = function(e) {
+window.handleAdminLogin = async function(e) {
   if (e) e.preventDefault();
-  const email = document.getElementById('admin-email')?.value;
-  const password = document.getElementById('admin-password')?.value;
+  const email = document.getElementById('admin-email')?.value?.trim() || '';
+  const password = document.getElementById('admin-password')?.value || '';
 
-  if (email === 'admin@sbgroup.com' && password === 'sbgroup2026') {
-    window.sbApp.isAdminAuthenticated = true;
-    window.closeAdminLoginModal();
-    window.switchView('admin-dashboard');
-    window.showToast('এডমিন লগইন সফল হয়েছে! স্বাগতম Admin Shajib.', 'success');
-  } else {
-    window.showToast('ভুল এডমিন তথ্য! ডেমো: admin@sbgroup.com / sbgroup2026', 'error');
+  try {
+    const [emailHash, passwordHash] = await Promise.all([sbHash(email), sbHash(password)]);
+    if (emailHash === SB_ADMIN_EMAIL_HASH && passwordHash === SB_ADMIN_PASSWORD_HASH) {
+      window.sbApp.isAdminAuthenticated = true;
+      window.closeAdminLoginModal();
+      window.switchView('admin-dashboard');
+      window.showToast('এডমিন লগইন সফল হয়েছে! স্বাগতম Admin Shajib.', 'success');
+    } else {
+      window.showToast('ভুল এডমিন তথ্য!', 'error');
+    }
+  } catch (err) {
+    console.error(err);
+    window.showToast('লগইন যাচাই করা যায়নি। আবার চেষ্টা করুন।', 'error');
   }
 };
 
 window.fillDemoCredentials = function() {
-  const email = document.getElementById('admin-email');
-  const password = document.getElementById('admin-password');
-  if (email && password) {
-    email.value = 'admin@sbgroup.com';
-    password.value = 'sbgroup2026';
-    window.showToast('ডেমো এডমিন তথ্য দেওয়া হয়েছে!', 'info');
-  }
+  window.showToast('নিরাপত্তার কারণে Demo credentials আর দেখানো/ভরানো হয় না।', 'info');
 };
 
 window.switchView = function(viewName) {
@@ -1545,7 +1550,22 @@ window.switchAdminTab = function(tabName) {
     tabCustomers.classList.remove('hidden');
     window.renderAdminCustomersTable();
   }
-  if (tabName === 'add-product' && tabAddProduct) tabAddProduct.classList.remove('hidden');
+  if (tabName === 'add-product' && tabAddProduct) {
+    tabAddProduct.classList.remove('hidden');
+    if (!editingProductId) {
+      adminProductImages = [];
+      const preview = document.getElementById('product-multi-image-preview');
+      if (preview) preview.innerHTML = '';
+      const form = document.getElementById('add-product-form');
+      if (form) form.reset();
+      const submitButton = document.querySelector('#add-product-form button[type="submit"]');
+      if (submitButton) submitButton.textContent = '+ Publish Product to Storefront';
+      const imagePreview = document.getElementById('image-upload-preview');
+      if (imagePreview) imagePreview.src = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80';
+      const hiddenImage = document.getElementById('product-image-preview-src');
+      if (hiddenImage) hiddenImage.value = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80';
+    }
+  }
   if (tabName === 'catalog' && tabCatalog) {
     tabCatalog.classList.remove('hidden');
     window.renderAdminProductsTable();
@@ -1698,8 +1718,8 @@ window.renderAdminProductsTable = function() {
       </td>
       <td class="py-3 px-4 font-bold text-slate-900">${window.formatBDT(p.price)}</td>
       <td class="py-3 px-4 font-semibold text-emerald-700">${p.stock} units</td>
-      <td class="py-3 px-4 text-amber-500 font-bold">★ ${p.rating}</td>
-      <td class="py-3 px-4 text-right">
+      <td class="py-3 px-4 text-right whitespace-nowrap">
+        <button onclick="window.editProduct('${p.id}')" class="text-emerald-600 hover:text-emerald-800 font-semibold p-1 mr-2">Edit</button>
         <button onclick="window.sbApp.deleteProductByAdmin('${p.id}')" class="text-rose-600 hover:text-rose-800 font-semibold p-1">Delete</button>
       </td>
     </tr>
@@ -1794,10 +1814,53 @@ window.scrollChatToBottom = function() {
   }
 };
 
+// Edit an existing product from Product Maintenance / Catalog
+window.editProduct = function(productId) {
+  const product = window.sbApp.products.find(p => p.id === productId);
+  if (!product) {
+    window.showToast('Product পাওয়া যায়নি!', 'error');
+    return;
+  }
+
+  editingProductId = productId;
+
+  document.getElementById('product-title').value = product.name || '';
+  document.getElementById('product-category').value = product.category || 'Electronics';
+  document.getElementById('product-price').value = product.price ?? '';
+  document.getElementById('product-compare-price').value = product.originalPrice ?? '';
+  document.getElementById('product-stock').value = product.stock ?? 0;
+  document.getElementById('product-delivery-charge').value = product.deliveryCharge ?? 0;
+  document.getElementById('product-description').value = product.description || '';
+
+  const allImages = [
+    ...(product.image ? [product.image] : []),
+    ...(Array.isArray(product.images) ? product.images : [])
+  ].filter(Boolean);
+
+  adminProductImages = allImages.slice(0, 8);
+
+  const hiddenImage = document.getElementById('product-image-preview-src');
+  if (hiddenImage) hiddenImage.value = adminProductImages[0] || '';
+
+  const imagePreview = document.getElementById('image-upload-preview');
+  if (imagePreview) {
+    imagePreview.src = adminProductImages[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80';
+  }
+
+  renderAdminProductImagePreview();
+
+  const submitButton = document.querySelector('#add-product-form button[type="submit"]');
+  if (submitButton) submitButton.textContent = '✓ Update Product';
+
+  window.switchAdminTab('add-product');
+  window.showToast(`"${product.name}" Edit করার জন্য খোলা হয়েছে।`, 'info');
+};
+
 // Admin Add Product Handling
 window.handleAddProduct = function(e) {
   if (e) e.preventDefault();
-  const name = document.getElementById('product-title')?.value;
+
+  const name = document.getElementById('product-title')?.value.trim();
   const category = document.getElementById('product-category')?.value;
   const price = document.getElementById('product-price')?.value;
   const originalPrice = document.getElementById('product-compare-price')?.value;
@@ -1811,18 +1874,73 @@ window.handleAddProduct = function(e) {
     return;
   }
 
-  window.sbApp.addNewProduct({
-    name,
-    category,
-    price,
-    originalPrice,
-    stock,
-    description,
-    deliveryCharge,
-    image: imageInput || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80'
-  });
+  const gallery = adminProductImages.length ? [...adminProductImages] : (imageInput ? [imageInput] : []);
+  const mainImage = gallery[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80';
 
-  document.getElementById('add-product-form')?.reset();
+  // EDIT: update the existing product instead of creating a new one
+  if (editingProductId) {
+    const product = window.sbApp.products.find(p => p.id === editingProductId);
+
+    if (!product) {
+      window.showToast('Product পাওয়া যায়নি!', 'error');
+      editingProductId = null;
+      return;
+    }
+
+    product.name = name;
+    product.category = category;
+    product.price = parseFloat(price) || 0;
+    product.originalPrice = parseFloat(originalPrice) || 0;
+    product.stock = parseInt(stock) || 0;
+    product.description = description || '';
+    product.deliveryCharge = parseFloat(deliveryCharge) || 0;
+    product.image = mainImage;
+    product.images = gallery.slice(1);
+
+    // Remove old rating/warranty data if it existed in saved localStorage
+    delete product.rating;
+    delete product.reviewsCount;
+    if (product.specs) delete product.specs.Warranty;
+
+    window.sbApp.saveStored('sb_products_v4', window.sbApp.products);
+    window.renderRecommendedProducts();
+    window.renderAdminProductsTable();
+    window.updateAdminStats();
+
+    window.showToast(`"${product.name}" সফলভাবে Update হয়েছে!`, 'success');
+  } else {
+    // ADD: keep the existing add-product behavior
+    window.sbApp.addNewProduct({
+      name,
+      category,
+      price,
+      originalPrice,
+      stock,
+      description,
+      deliveryCharge,
+      image: mainImage,
+      images: gallery.slice(1)
+    });
+  }
+
+  editingProductId = null;
+  adminProductImages = [];
+
+  const preview = document.getElementById('product-multi-image-preview');
+  if (preview) preview.innerHTML = '';
+
+  const form = document.getElementById('add-product-form');
+  if (form) form.reset();
+
+  const imagePreview = document.getElementById('image-upload-preview');
+  if (imagePreview) imagePreview.src = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80';
+
+  const hiddenImage = document.getElementById('product-image-preview-src');
+  if (hiddenImage) hiddenImage.value = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=600&q=80';
+
+  const submitButton = document.querySelector('#add-product-form button[type="submit"]');
+  if (submitButton) submitButton.textContent = '+ Publish Product to Storefront';
+
   window.switchAdminTab('catalog');
 };
 
@@ -1937,20 +2055,57 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// Image Upload Preview in Admin
-window.handleImageUpload = function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
+// Multiple Product Image Upload in Admin
+function renderAdminProductImagePreview() {
+  const preview = document.getElementById('product-multi-image-preview');
+  if (!preview) return;
+  preview.innerHTML = adminProductImages.map((src, i) => `
+    <div class="relative group aspect-square rounded-xl overflow-hidden border border-slate-200 bg-white">
+      <img src="${src}" class="w-full h-full object-cover">
+      <button type="button" onclick="window.removeAdminProductImage(${i})" class="absolute top-1 right-1 w-5 h-5 rounded-full bg-rose-500 text-white text-xs font-bold opacity-90 hover:opacity-100">×</button>
+      ${i === 0 ? '<span class="absolute bottom-0 left-0 right-0 bg-emerald-600/90 text-white text-[9px] text-center py-0.5">Main</span>' : ''}
+    </div>
+  `).join('');
+}
 
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    const preview = document.getElementById('image-upload-preview');
-    const inputHidden = document.getElementById('product-image-preview-src');
-    if (preview) preview.src = event.target.result;
-    if (inputHidden) inputHidden.value = event.target.result;
-    window.showToast('পণ্যের ছবি আপলোড হয়েছে!', 'info');
-  };
-  reader.readAsDataURL(file);
+window.removeAdminProductImage = function(index) {
+  adminProductImages.splice(index, 1);
+  const hidden = document.getElementById('product-image-preview-src');
+  if (hidden) hidden.value = adminProductImages[0] || '';
+  renderAdminProductImagePreview();
+};
+
+window.handleImageUpload = function(e) {
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+
+  let pending = files.length;
+  files.forEach(file => {
+    if (!file.type.startsWith('image/')) {
+      pending--;
+      return;
+    }
+    if (file.size > 4 * 1024 * 1024) {
+      window.showToast('প্রতিটি ছবি 4MB-এর মধ্যে রাখুন।', 'error');
+      pending--;
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(event) {
+      if (adminProductImages.length < 8) {
+        adminProductImages.push(event.target.result);
+      }
+      pending--;
+      if (pending === 0) {
+        const hidden = document.getElementById('product-image-preview-src');
+        if (hidden) hidden.value = adminProductImages[0] || '';
+        renderAdminProductImagePreview();
+        window.showToast(`মোট ${adminProductImages.length}টি product image প্রস্তুত হয়েছে।`, 'info');
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value = '';
 };
 
 // Initialize on DOM load
