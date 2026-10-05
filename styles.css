@@ -1,0 +1,240 @@
+/* SB Group - Modern Bangladeshi E-Commerce Platform Styles */
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary-emerald: #059669;
+  --primary-emerald-hover: #047857;
+  --primary-emerald-light: #ecfdf5;
+  --primary-emerald-border: #a7f3d0;
+  --accent-forest: #064e3b;
+  --dark-slate: #0f172a;
+  --text-body: #475569;
+  --surface-white: #ffffff;
+  --surface-subtle: #f8fafc;
+  --currency-color: #047857;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Hind Siliguri', system-ui, -apple-system, sans-serif;
+  color: #1e293b;
+  background-color: #fbfdfc;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-image: 
+    radial-gradient(at 10% 10%, rgba(16, 185, 129, 0.04) 0px, transparent 50%),
+    radial-gradient(at 90% 20%, rgba(5, 150, 105, 0.03) 0px, transparent 40%),
+    radial-gradient(at 50% 80%, rgba(209, 250, 229, 0.25) 0px, transparent 60%);
+  background-attachment: fixed;
+}
+
+/* Currency Taka Symbol */
+.taka-sign {
+  font-family: 'Hind Siliguri', 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  margin-right: 1px;
+}
+
+/* Handwritten Doodle Font */
+.font-handwritten {
+  font-family: 'Caveat', cursive, sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #059669;
+}
+
+/* Unique Organic Hero Background Mesh */
+.hero-gradient-bg {
+  background: radial-gradient(circle at 18% 32%, rgba(209, 250, 229, 0.75) 0%, rgba(236, 253, 245, 0.5) 45%, rgba(255, 255, 255, 0) 80%);
+}
+
+.hero-mint-blob {
+  background: linear-gradient(135deg, #a7f3d0 0%, #d1fae5 50%, #ecfdf5 100%);
+  border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+  filter: blur(2px);
+  animation: blob-float 12s ease-in-out infinite alternate;
+}
+
+@keyframes blob-float {
+  0% {
+    border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    border-radius: 55% 45% 35% 65% / 50% 60% 40% 50%;
+    transform: rotate(2deg) scale(1.02);
+  }
+  100% {
+    border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+    transform: rotate(-1deg) scale(0.99);
+  }
+}
+
+/* Floating animation */
+@keyframes soft-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+.animate-soft-float {
+  animation: soft-float 4s ease-in-out infinite;
+}
+
+/* Category Circle Icon Cards */
+.category-circle-wrapper {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.category-circle-wrapper:hover {
+  transform: translateY(-4px);
+}
+.category-circle-wrapper:hover .category-circle {
+  transform: scale(1.08);
+  box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.18);
+}
+
+/* Product Card Hover Zoom */
+.product-card {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background: #ffffff;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+}
+.product-card:hover .product-img {
+  transform: scale(1.05);
+}
+
+/* Glassmorphism elements */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+/* Pulse dot for online status */
+.pulse-online {
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: pulse-ring 2s infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+/* Button micro-interactions */
+.btn-emerald {
+  background-color: #059669;
+  color: #ffffff;
+  transition: all 0.2s ease-in-out;
+}
+.btn-emerald:hover {
+  background-color: #047857;
+  box-shadow: 0 4px 14px 0 rgba(5, 150, 105, 0.35);
+  transform: translateY(-1px);
+}
+.btn-emerald:active {
+  transform: translateY(0);
+}
+
+/* Drawer transitions */
+.drawer-backdrop {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+}
+.drawer-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drawer-panel {
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.drawer-panel.active {
+  transform: translateX(0);
+}
+
+/* Toast Notification */
+#toast-container {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  animation: toast-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* bKash, Nagad payment brand pills */
+.badge-bkash {
+  background: #e2136e;
+  color: #ffffff;
+}
+.badge-nagad {
+  background: #f7941d;
+  color: #ffffff;
+}
+.badge-rocket {
+  background: #8c3494;
+  color: #ffffff;
+}
+
+/* Admin Chat Window Layout */
+.admin-chat-message-bubble {
+  max-width: 78%;
+  border-radius: 1.25rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+/* Account Maintenance Tab Transitions */
+.account-tab-btn.active {
+  background-color: #059669;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
+}
